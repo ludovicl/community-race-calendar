@@ -1,0 +1,16 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+node_modules/
+vendor/
+dist/
+coverage/
+.phpunit.result.cache
+playwright-report/
+test-results/
+wordpress/
+wp-content/uploads/
+*.zip
+*.log
+build/

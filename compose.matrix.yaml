@@ -1,0 +1,68 @@
+# Compatibility matrix: the same stack as compose.yaml with a configurable WordPress image, CLI image and port.
+# Driven by bin/test-matrix.sh; never started with real credentials or external services.
+services:
+  db:
+    image: mariadb:11.4@sha256:67873d30a17f6a9c331f06363b2fa15f38abca415529966d67c84f87f82439fe
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: localtest
+      MARIADB_ROOT_PASSWORD: localtestroot
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - matrix_db:/var/lib/mysql
+
+  wordpress:
+    image: ${CRCAL_WP_IMAGE:?}
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: localtest
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DEBUG: "1"
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_ENVIRONMENT_TYPE', 'local');
+        define('CRCAL_PRIVATE_UPLOAD_DIR', '/var/www/crc-private');
+    entrypoint: ["/bin/sh", "-c", "mkdir -p /var/www/crc-private && chown -R www-data:www-data /var/www/crc-private && exec docker-entrypoint.sh apache2-foreground"]
+    ports:
+      - "${CRCAL_PORT:?}:80"
+    volumes:
+      - matrix_wordpress:/var/www/html
+      - matrix_private:/var/www/crc-private
+      - ./plugin/community-race-calendar:/var/www/html/wp-content/plugins/community-race-calendar
+      - ./tests/fixtures/mu-plugins:/var/www/html/wp-content/mu-plugins
+
+  cli:
+    image: ${CRCAL_CLI_IMAGE:?}
+    depends_on:
+      db:
+        condition: service_healthy
+      wordpress:
+        condition: service_started
+    user: "33:33"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: localtest
+      WORDPRESS_DB_NAME: wordpress
+      WP_ENVIRONMENT_TYPE: local
+      CRCAL_PRIVATE_UPLOAD_DIR: /var/www/crc-private
+    volumes:
+      - matrix_wordpress:/var/www/html
+      - matrix_private:/var/www/crc-private
+      - ./plugin/community-race-calendar:/var/www/html/wp-content/plugins/community-race-calendar
+      - ./tests:/workspace/tests
+      - ./tests/fixtures/mu-plugins:/var/www/html/wp-content/mu-plugins
+    working_dir: /var/www/html
+
+volumes:
+  matrix_db:
+  matrix_wordpress:
+  matrix_private:

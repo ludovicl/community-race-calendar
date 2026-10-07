@@ -1,0 +1,69 @@
+services:
+  db:
+    image: mariadb:11.4@sha256:67873d30a17f6a9c331f06363b2fa15f38abca415529966d67c84f87f82439fe
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: localtest
+      MARIADB_ROOT_PASSWORD: localtestroot
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - crcal_db:/var/lib/mysql
+
+  wordpress:
+    image: wordpress:php8.3-apache@sha256:b2d7e3153c8a96f90305a3102fb6439335237fb1a9655b617d15c5168ce2f7a3
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: localtest
+      WORDPRESS_DB_NAME: wordpress
+      WP_ENVIRONMENT_TYPE: local
+      CRCAL_PRIVATE_UPLOAD_DIR: /var/www/crc-private
+      WORDPRESS_DEBUG: "1"
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_ENVIRONMENT_TYPE', 'local');
+        define('SCRIPT_DEBUG', true);
+        define('CRCAL_PRIVATE_UPLOAD_DIR', '/var/www/crc-private');
+    entrypoint: ["/bin/sh", "-c", "mkdir -p /var/www/crc-private && chown -R www-data:www-data /var/www/crc-private && exec docker-entrypoint.sh apache2-foreground"]
+    ports:
+      - "8087:80"
+    volumes:
+      - crcal_wordpress:/var/www/html
+      - crcal_private:/var/www/crc-private
+      - ./plugin/community-race-calendar:/var/www/html/wp-content/plugins/community-race-calendar
+      - ./tests/fixtures/mu-plugins:/var/www/html/wp-content/mu-plugins
+
+  cli:
+    image: wordpress:cli-php8.3@sha256:2b5e9d4d3e51909dca1aaa4732e9f5e5bf0377c2114dbd8ff39f060bff202586
+    depends_on:
+      db:
+        condition: service_healthy
+      wordpress:
+        condition: service_started
+    user: "33:33"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: localtest
+      WORDPRESS_DB_NAME: wordpress
+      WP_ENVIRONMENT_TYPE: local
+      CRCAL_PRIVATE_UPLOAD_DIR: /var/www/crc-private
+    volumes:
+      - crcal_wordpress:/var/www/html
+      - crcal_private:/var/www/crc-private
+      - ./plugin/community-race-calendar:/var/www/html/wp-content/plugins/community-race-calendar
+      - ./tests:/workspace/tests
+      - ./tests/fixtures/mu-plugins:/var/www/html/wp-content/mu-plugins
+    working_dir: /var/www/html
+
+volumes:
+  crcal_db:
+  crcal_wordpress:
+  crcal_private:

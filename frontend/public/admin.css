@@ -1,0 +1,62 @@
+.crc-settings { max-width: 1040px; }
+.crc-settings__header { align-items: flex-start; display: flex; gap: 24px; justify-content: space-between; margin: 18px 0 20px; }
+.crc-settings__header h1 { font-size: 1.75rem; font-weight: 650; line-height: 1.25; margin: 0; }
+.crc-settings__header p { color: #50575e; font-size: 0.9375rem; margin: 6px 0 0; }
+.crc-settings__header .button { flex: 0 0 auto; margin-top: 3px; }
+.crc-settings > .notice { margin: 0 0 16px; }
+.crc-settings__summary { background: #fff; border: 1px solid #c3c4c7; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0 0 20px; }
+.crc-settings__summary > div { min-width: 0; padding: 14px 16px; }
+.crc-settings__summary > div + div { border-left: 1px solid #dcdcde; }
+.crc-settings__summary dt { color: #646970; font-size: 0.75rem; margin-bottom: 4px; }
+.crc-settings__summary dd { font-size: 0.875rem; font-weight: 600; margin: 0; overflow-wrap: anywhere; }
+.crc-settings__form { display: grid; gap: 16px; }
+.crc-settings__section { background: #fff; border: 1px solid #c3c4c7; padding: 22px 24px; }
+.crc-settings__section--standalone { margin-top: 20px; scroll-margin-top: 44px; }
+.crc-settings__section--compact { padding-bottom: 20px; padding-top: 20px; }
+.crc-settings__section-heading { border-bottom: 1px solid #dcdcde; margin: 0 0 8px; padding: 0 0 14px; }
+.crc-settings__section-heading h2 { font-size: 1.125rem; line-height: 1.35; margin: 0; padding: 0; }
+.crc-settings__section-heading p { color: #50575e; margin: 5px 0 0; max-width: 70ch; }
+.crc-settings__section-heading--status { align-items: flex-start; display: flex; gap: 20px; justify-content: space-between; }
+.crc-settings .form-table { margin: 0; }
+.crc-settings .form-table th { font-weight: 600; padding: 18px 20px 18px 0; width: 220px; }
+.crc-settings .form-table td { padding: 14px 0; }
+.crc-settings .regular-text { max-width: 32rem; width: 100%; }
+.crc-settings__check { display: block; margin: 0 0 8px; }
+.crc-settings__colors { display: flex; flex-wrap: wrap; gap: 14px 28px; padding-top: 18px; }
+.crc-settings__colors label { align-items: center; display: flex; gap: 10px; }
+.crc-settings__colors span { font-weight: 600; }
+.crc-settings__colors input { height: 34px; padding: 2px; width: 44px; }
+.crc-settings__form > .submit { margin: 0; padding: 0; }
+.crc-settings__source { color: #3c434a; margin: 14px 0 18px; max-width: 70ch; }
+.crc-settings__status { border-radius: 999px; flex: 0 0 auto; font-size: 0.75rem; font-weight: 600; line-height: 1; padding: 7px 10px; }
+.crc-settings__status.is-success { background: #edfaef; color: #116329; }
+.crc-settings__status.is-warning { background: #fcf0d4; color: #674b00; }
+.crc-settings__status.is-neutral { background: #f0f0f1; color: #50575e; }
+.crc-settings__key-form > label:first-of-type { display: block; font-weight: 600; margin-bottom: 7px; }
+.crc-settings__secret { align-items: center; display: flex; gap: 8px; max-width: 42rem; }
+.crc-settings__secret .regular-text { flex: 1 1 auto; }
+.crc-settings__remove-key { display: block; margin-top: 14px; }
+.crc-settings__actions { margin-top: 16px; }
+.crc-settings__test-form { border-top: 1px solid #dcdcde; margin-top: 20px; padding-top: 16px; }
+
+@media (max-width: 782px) {
+  .crc-settings__header { display: block; }
+  .crc-settings__header .button { margin-top: 14px; }
+  .crc-settings__summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .crc-settings__summary > div + div { border-left: 0; }
+  .crc-settings__summary > div:nth-child(even) { border-left: 1px solid #dcdcde; }
+  .crc-settings__summary > div:nth-child(n + 3) { border-top: 1px solid #dcdcde; }
+  .crc-settings__section { padding: 18px 16px; }
+  .crc-settings__section-heading--status { display: block; }
+  .crc-settings__status { display: inline-block; margin-top: 12px; }
+  .crc-settings .form-table th { padding-bottom: 4px; width: auto; }
+  .crc-settings .form-table td { padding-top: 4px; }
+}
+
+@media (max-width: 480px) {
+  .crc-settings__summary { grid-template-columns: 1fr; }
+  .crc-settings__summary > div:nth-child(even) { border-left: 0; }
+  .crc-settings__summary > div + div { border-top: 1px solid #dcdcde; }
+  .crc-settings__secret { align-items: stretch; flex-direction: column; }
+  .crc-settings__secret .button { justify-content: center; }
+}

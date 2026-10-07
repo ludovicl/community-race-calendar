@@ -1,0 +1,1 @@
+import{t as e}from"./chunks/preload-helper-CtT0-S4g.js";var t=()=>!!(window.React&&window.ReactDOM&&window.ReactJSXRuntime),n=()=>e(async()=>{let{mount:e}=await import(`./chunks/mount-FCsqbITm.js`);return{mount:e}},[],import.meta.url).then(({mount:e})=>e());t()?n():window.addEventListener(`load`,()=>{t()&&n()},{once:!0});

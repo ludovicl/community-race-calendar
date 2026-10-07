@@ -1,0 +1,56 @@
+services:
+  package_db:
+    image: mariadb:11.4@sha256:67873d30a17f6a9c331f06363b2fa15f38abca415529966d67c84f87f82439fe
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: localtest
+      MARIADB_ROOT_PASSWORD: localtestroot
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - crcal_package_db:/var/lib/mysql
+
+  package_wordpress:
+    image: wordpress:php8.3-apache@sha256:b2d7e3153c8a96f90305a3102fb6439335237fb1a9655b617d15c5168ce2f7a3
+    depends_on:
+      package_db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: package_db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: localtest
+      WORDPRESS_DB_NAME: wordpress
+      WP_ENVIRONMENT_TYPE: local
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_ENVIRONMENT_TYPE', 'local');
+    ports:
+      - "8088:80"
+    volumes:
+      - crcal_package_wordpress:/var/www/html
+
+  package_cli:
+    image: wordpress:cli-php8.3@sha256:2b5e9d4d3e51909dca1aaa4732e9f5e5bf0377c2114dbd8ff39f060bff202586
+    depends_on:
+      package_db:
+        condition: service_healthy
+      package_wordpress:
+        condition: service_started
+    user: "33:33"
+    environment:
+      WORDPRESS_DB_HOST: package_db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: localtest
+      WORDPRESS_DB_NAME: wordpress
+      WP_ENVIRONMENT_TYPE: local
+    volumes:
+      - crcal_package_wordpress:/var/www/html
+      - ./build:/artifacts:ro
+    working_dir: /var/www/html
+
+volumes:
+  crcal_package_db:
+  crcal_package_wordpress:
